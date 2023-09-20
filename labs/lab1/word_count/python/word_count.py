@@ -12,23 +12,22 @@ def wc_file(filename):
     except FileNotFoundError:
         return 0
 
-def wc_dir(dir_path):
+def wc_dir(dir_path, output_file):
     count = 0
-    for filename in os.listdir(dir_path):
-        filepath = os.path.join(dir_path, filename)
-        if os.path.isfile(filepath):
-            count += wc_file(filepath)
-        elif os.path.isdir(filepath):
-            count += wc_dir(filepath)  # Chamada recursiva para diretórios
-    return count
+    with open(output_file, 'a') as out_file:
+        for filename in os.listdir(dir_path):
+            filepath = os.path.join(dir_path, filename)
+            if os.path.isfile(filepath):
+                count += wc_file(filepath)
+        out_file.write(str(count) + '\n')
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python", sys.argv[0], "root_directory_path")
+    if len(sys.argv) != 3:
+        print("Usage: python", sys.argv[0], "directory_path", "outputfile_path")
         return
-    root_path = os.path.abspath(sys.argv[1])
-    count = wc_dir(root_path)
-    print(count)
+    dir_path = os.path.abspath(sys.argv[1])
+    output_file = os.path.abspath(sys.argv[2])
+    wc_dir(dir_path, output_file)
 
 if __name__ == "__main__":
     main()
