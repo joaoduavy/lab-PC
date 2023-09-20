@@ -1,0 +1,20 @@
+#!/bin/bash
+
+directory="$1"
+number_words=0
+
+open_dir() {
+    local root
+    root=$(ls -1 "$1")
+
+    for item in $root; do
+        if [ -d "$directory/$item" ]; then
+		echo "Exec: $(go run ./word_count.go $root/$item)"
+        else
+		echo "$item"
+        	echo "do nothing"
+	fi
+    done
+}
+
+open_dir "$directory"
