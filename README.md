@@ -1,1 +1,1 @@
-# lab1-concorrente
+# lab-PC
