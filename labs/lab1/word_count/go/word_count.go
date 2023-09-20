@@ -79,22 +79,13 @@ func main() {
 
     var file io.Writer
 
-    // Verificar se o arquivo temporário já existe
-    if _, err := os.Stat(outputFilePath); err != nil {
-        outputFile, err := os.Create(outputFilePath)
-        if err != nil {
-            log.Fatal(err)
-        }
-        defer outputFile.Close()
-        file = outputFile // Atribua o arquivo criado à variável file
-    } else {
-        outputFile, err := os.OpenFile(outputFilePath, os.O_WRONLY|os.O_APPEND, 0644)
-        if err != nil {
-            log.Fatal(err)
-        }
-        defer outputFile.Close()
-        file = outputFile // Atribua o arquivo existente à variável file
+    outputFile, err := os.OpenFile(outputFilePath, os.O_WRONLY|os.O_APPEND, 0644)
+    if err != nil {
+        log.Fatal(err)
     }
+    defer outputFile.Close()
+    file = outputFile
+    
 
     number := 0
     for _, fileInfo := range files {
@@ -104,7 +95,6 @@ func main() {
         }
     }
 
-    // Redirecione a saída para o arquivo
     fmt.Fprintln(file, number)
 }
 
