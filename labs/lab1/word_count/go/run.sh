@@ -3,7 +3,6 @@
 directory="$1"
 number_words=0
 
-# Crie o arquivo outputfile.txt como temporário
 outputFilePath=$(mktemp)
 echo "Arquivo temporário criado em: $outputFilePath"
 
@@ -30,8 +29,6 @@ open_dir() {
     for ((i = 0; i < n_procs; i++)); do
         wait ${pids[${i}]}
     done
-
-    echo "Todos os processos concluídos."
 
     
     total=0
