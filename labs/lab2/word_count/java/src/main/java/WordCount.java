@@ -34,6 +34,8 @@ public class WordCount {
     // │     ├── file
     // │     ├── ...
     // │     └── file
+
+    // da pra melhorar mais colocando um array pra as threads colocarem seus conteudos la dentro assim nao vai ser preciso fazer mutex.wait() que gasta muita CPU
     public static void main(String[] args) {
         if (args.length != 1) {
             System.err.println("Usage: java WordCount <root_directory>");
