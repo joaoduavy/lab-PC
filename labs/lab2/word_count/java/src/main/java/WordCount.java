@@ -2,8 +2,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CyclicBarrier;
 
 public class WordCount {
+
+    public static int count;
+    public static ReentrantLock mutex;
+    public static CyclicBarrier barreira;
     
     // Calculate the number of words in the files stored under the directory name
     // available at argv[1].
@@ -33,20 +40,37 @@ public class WordCount {
             System.exit(1);
         }
 
+        //MyThread t0 = new MyThread();
+        //t0.start();
+        // ------------------------------------------
+        //MinhaRunnable minhaRunnable = new MinhaRunnable("Olá, mundo!");
+        //Thread thread = new Thread(minhaRunnable);
+        //thread.start();
+        
         String rootPath = args[0];
         File rootDir = new File(rootPath);
         File[] subdirs = rootDir.listFiles();
-        int count = 0;
+
+        mutex =  new ReentrantLock();
+        barreira = new CyclicBarrier(subdirs.length + 1);
+        count = 0;
 
         if (subdirs != null) {
             for (File subdir : subdirs) {
                 if (subdir.isDirectory()) {
                     String dirPath = rootPath + "/" + subdir.getName();
-                    count += wcDir(dirPath);
+                    MyOwnRunnable run = new MyOwnRunnable(dirPath);
+                    Thread thread = new Thread(run);
+                    thread.start();
                 }
             }
         }
 
+        try {
+            barreira.await();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println(count);
     }
 
@@ -89,4 +113,43 @@ public class WordCount {
         }
         return count;
     }
+
+    // n requer uma instancia da outra classe para ser instanciada
+     static class MyOwnRunnable implements Runnable {
+    
+        String dirPath;
+
+        public MyOwnRunnable(String dirPath) {
+            this.dirPath = dirPath;
+            
+        }
+
+        @Override
+        public void run() {
+            int words =  wcDir(dirPath);
+            mutex.lock();
+            try {
+                count += words;
+                System.out.println("Thread está na seção crítica. " + count);
+            } finally {
+                mutex.unlock();
+            }
+
+            try {
+                barreira.await();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
